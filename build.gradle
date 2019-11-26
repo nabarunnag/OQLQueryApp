@@ -1,0 +1,51 @@
+buildscript {
+    dependencies {
+        classpath "com.github.jengelman.gradle.plugins:shadow:5.2.0"
+        classpath 'de.sebastianboegl.gradle.plugins:shadow-log4j-transformer:2.2.0'
+    }
+}
+plugins {
+    id 'java'
+}
+
+group 'io.pivotal'
+version '1.0-SNAPSHOT'
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'idea'
+apply plugin: 'com.github.johnrengelman.shadow'
+sourceCompatibility = 1.8
+mainClassName = "io.pivotal.OQLQueryApp"
+
+repositories {
+    mavenCentral()
+    maven {
+        credentials {
+            username "$gemfireReleaseRepoUser"
+            password "$gemfireReleaseRepoPassword"
+        }
+        url "https://commercial-repo.pivotal.io/data3/gemfire-release-repo/gemfire"
+    }
+}
+
+dependencies {
+    compile group: 'io.pivotal.gemfire', name:'geode-core', version: '9.8.4'
+    compile group: 'io.pivotal.gemfire', name:'geode-wan', version: '9.8.4'
+    compile group: 'io.pivotal.gemfire', name:'geode-cq', version: '9.8.4'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1'
+    testCompile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.12.1'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation files('/Users/nnag/Development/jarDir/test.jar')
+}
+
+shadowJar {
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer)
+    mergeServiceFiles()
+}
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'io.pivotal.OQLQueryApp'
+        )
+    }
+}

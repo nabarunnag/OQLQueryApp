@@ -1,0 +1,8 @@
+---
+applications:
+  - name: query_app
+    path: build/libs/OQLQueryApp-1.0-SNAPSHOT-all.jar
+    no-route: true
+    health-check-type: none
+    services:
+      - pcc-benchmark-service
